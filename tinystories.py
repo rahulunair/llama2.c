@@ -2,6 +2,8 @@
 Download, preprocess and serve the TinyStories dataset as a DataLoader.
 """
 
+import torch
+import intel_extension_for_pytorch
 import argparse
 import glob
 import json
@@ -12,7 +14,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import numpy as np
 import requests
-import torch
 import torch.distributed as dist
 from tqdm import tqdm
 
@@ -142,7 +143,7 @@ class PretokDataset(torch.utils.data.IterableDataset):
 class Task:
 
     @staticmethod
-    def iter_batches(split, batch_size, max_seq_len, device, num_workers=0):
+    def iter_batches(split, batch_size, max_seq_len, device="xpu", num_workers=0):
         ds = PretokDataset(split, max_seq_len)
         dl = torch.utils.data.DataLoader(
             ds, batch_size=batch_size, pin_memory=True, num_workers=num_workers
